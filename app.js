@@ -817,7 +817,7 @@ function buildIncCard(inc) {
                 </button>
                 <div class="btn-secondary-set">
                     <button class="btn-sec" onclick="incAction('ack',${inc.id})">Acknowledge</button>
-                    <button class="btn-sec" onclick="incAction('esc',${inc.id})">Escalate</button>
+                    <button class="btn-sec" onclick="incAction('esc',${inc.id})">Notify Admin</button>
                 </div>
             </div>
         </div>
@@ -835,10 +835,10 @@ function incAction(action, id) {
         inc.incStatus = 'Acknowledged';
         addLogEntry(`Incident Acknowledged: ${inc.title}`, 'Operator', 'OK');
     } else if (action === 'esc') {
-        inc.incStatus = 'Escalated';
+        inc.incStatus = 'Reported';
         const toast = document.getElementById('gmail-toast');
         if (toast) { toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 5000); }
-        addLogEntry(`Escalated: ${inc.title}`, 'Operator', 'OK');
+        addLogEntry(`Reported to Admin: ${inc.title}`, 'Operator', 'OK');
     } else if (action === 'details') {
         alert(`Incident #${inc.id}\n\nZone: ${inc.zone}\nComponent: ${inc.component}\nDetected: ${inc.detectedAt.toLocaleTimeString()}\nStatus: ${inc.incStatus}\n\nRoot Cause: ${inc.rootCause}`);
         return;
