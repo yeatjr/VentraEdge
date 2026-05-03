@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventra Edge | Cooling Spaces, Not Empty Rooms</title>
+    <meta name="description" content="Cooling Spaces, Not Empty Rooms. Eliminating HVAC waste in SMOs via Edge AI.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- TOP NAVIGATION -->
+    <nav class="topnav" id="topnav">
+        <div class="nav-brand">
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="none" style="margin-right:6px;"><path d="M10,25 L40,85 L90,25 L65,25 L40,60 L25,25 Z" fill="#2563EB"/><path d="M45,45 L90,45 L80,55 L40,55 Z" fill="#3B82F6"/><path d="M35,65 L85,65 L75,75 L30,75 Z" fill="#3B82F6"/></svg><span style="color:#0f172a; font-weight:700;">Ventra Edge</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" class="nav-link active" data-target="home">Home</a></li>
+            <li><a href="#" class="nav-link" data-target="dashboard">Dashboard</a></li>
+            <li><a href="#" class="nav-link" data-target="alerts">
+                Alerts <span class="nav-badge" id="alert-badge" style="display:none">!</span>
+            </a></li>
+            <li><a href="#" class="nav-link" data-target="profile">Profile</a></li>
+        </ul>
+        <button class="nav-cta" id="nav-auth-btn" onclick="navAuthAction()"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In</button>
+    </nav>
+
+    <!-- ============================================================ -->
+    <!-- HOME VIEW -->
+    <!-- ============================================================ -->
+    <div id="home" class="view-section active">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-bg"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <!-- Welcome greeting, shown when logged in -->
+                <div class="hero-greeting" id="hero-greeting" style="display:none">
+                    <i class="fa-solid fa-sun"></i>
+                    <span id="greeting-text">Welcome back!</span>
+                </div>
+                <h1 class="hero-title">Cooling Spaces,<br>Not Empty Rooms</h1>
+                <p class="hero-subtitle">Ventra Edge eliminates HVAC waste in Small and Medium Offices by detecting real occupancy — no cameras, no timers, just intelligence at the edge.</p>
+                <div class="hero-actions">
+                    <button class="btn-hero-primary" onclick="navigateTo('dashboard')">
+                        <i class="fa-solid fa-chart-line"></i> Launch Dashboard
+                    </button>
+                    <button class="btn-hero-secondary" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
+                        Learn More <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Floating Cards (shown only when logged in) -->
+            <div class="hero-cards" id="hero-cards" style="display:none">
+                <div class="float-card float-card-left">
+                    <div class="float-card-header">
+                        <div class="dot dot-green"></div>
+                        <span>Room BKT4 — Node 1</span>
+                    </div>
+                    <div class="float-metric">
+                        <span class="metric-label">CSI Occupancy</span>
+                        <span class="metric-value blue"><i class="fa-solid fa-user"></i> Detected</span>
+                    </div>
+                    <div class="float-row">
+                        <div class="float-mini">
+                            <span class="mini-label">Fan Speed</span>
+                            <span class="mini-val">67%</span>
+                        </div>
+                        <div class="float-mini">
+                            <span class="mini-label">Damper</span>
+                            <span class="mini-val">52°</span>
+                        </div>
+                    </div>
+                    <div class="float-bar-wrap">
+                        <div class="float-bar" style="width: 67%;"></div>
+                    </div>
+                    <p class="float-caption"><i class="fa-solid fa-bolt"></i> Edge model active — adjusting in real time</p>
+                    <button class="float-btn" onclick="navigateTo('dashboard')" style="margin-top:0.75rem">
+                        View Dashboard <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <div class="float-card float-card-right">
+                    <div class="float-card-header">
+                        <div class="dot dot-blue"></div>
+                        <span>System Alert</span>
+                    </div>
+                    <div class="alert-row"><span class="alert-label">Status</span><span class="badge-ok">Optimal</span></div>
+                    <div class="alert-row"><span class="alert-label">Active Nodes</span><span class="alert-val">12</span></div>
+                    <div class="alert-row"><span class="alert-label">Energy Saved</span><span class="alert-val blue">42.8%</span></div>
+                    <div class="alert-row"><span class="alert-label">Assigned Admin</span><span class="alert-val">technicial_a@utm.my</span></div>
+                    <button class="float-btn" onclick="navigateTo('alerts')">View Alerts <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES -->
+        <section class="features-section" id="features">
+            <div class="section-label">Our Technology</div>
+            <h2 class="section-title">Built for the real world</h2>
+            <p class="section-sub">Three pillars that make Ventra Edge fundamentally different from legacy systems.</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon-wrap">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h3>Privacy-First Sensing</h3>
+                    <p>Wi-Fi Channel State Information (CSI) detects occupancy patterns without any cameras or microphones — fully compliant and non-intrusive.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <h3>Edge AI Resilience</h3>
+                    <p>Lightweight ML models run directly on ESP32 microcontrollers. No cloud dependency — the system keeps working even during network outages.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrap">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <h3>Predictive Control</h3>
+                    <p>Moves beyond rule-based timers to a feedforward architecture that dynamically adjusts VAV dampers and VFD fans based on real occupancy.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATEMENT SECTION (moved here, after features) -->
+        <section class="statement-section">
+            <div class="statement-inner">
+                <p class="statement-text">
+                    We drive <span class="text-highlight">intelligent energy management</span> through privacy-first occupancy sensing and on-device machine learning — ensuring <span class="text-highlight">efficient, adaptive</span> HVAC control for every office space.
+                </p>
+            </div>
+        </section>
+
+        <!-- TRUST SECTION -->
+        <section class="trust-section">
+            <div class="trust-text">
+                <div class="section-label dark">Proven Impact</div>
+                <h2>Built for trust,<br>tested over time,<br>embraced by campuses.</h2>
+                <p>Ventra Edge was developed and validated at Universiti Teknologi Malaysia (UTM), where energy savings of over 40% were recorded across monitored office blocks.</p>
+                <ul class="trust-list">
+                    <li><i class="fa-solid fa-check-circle"></i> <strong>No camera data</strong> — complete occupant privacy</li>
+                    <li><i class="fa-solid fa-check-circle"></i> <strong>Offline capable</strong> — edge AI runs on-device</li>
+                    <li><i class="fa-solid fa-check-circle"></i> <strong>Scalable</strong> — from one room to an entire block</li>
+                </ul>
+                <button class="btn-dark" onclick="navigateTo('dashboard')">Explore the Dashboard</button>
+            </div>
+            <div class="trust-visual">
+                <div class="trust-stat-card">
+                    <div class="trust-stat">42.8%</div>
+                    <div class="trust-stat-label">Average energy saved vs. timer systems</div>
+                </div>
+                <div class="trust-stat-card secondary">
+                    <div class="trust-stat blue">94%</div>
+                    <div class="trust-stat-label">HVAC operational efficiency</div>
+                </div>
+                <div class="trust-stat-card secondary">
+                    <div class="trust-stat blue">&lt;50ms</div>
+                    <div class="trust-stat-label">Edge AI inference latency</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="site-footer">
+            <div class="footer-brand">
+                <svg width="24" height="24" viewBox="0 0 100 100" fill="none" style="margin-right:6px;"><path d="M10,25 L40,85 L90,25 L65,25 L40,60 L25,25 Z" fill="#2563EB"/><path d="M45,45 L90,45 L80,55 L40,55 Z" fill="#3B82F6"/><path d="M35,65 L85,65 L75,75 L30,75 Z" fill="#3B82F6"/></svg><span style="color:#0f172a; font-weight:700;">Ventra Edge</span>
+            </div>
+            <p>Smart HVAC control for Small & Medium Offices. Powered by Edge AI on ESP32.</p>
+            <p class="footer-copy">© 2026 Ventra Edge — UTM Technothon</p>
+        </footer>
+
+    </div><!-- end #home -->
+
+    <!-- ============================================================ -->
+    <!-- DASHBOARD VIEW -->
+    <!-- ============================================================ -->
+    <div id="dashboard" class="view-section">
+        <div class="inner-page">
+            <div class="page-header">
+                <div>
+                    <h2>Facility Dashboard</h2>
+                    <p>Monitor and manage your localized edge nodes.</p>
+                </div>
+            </div>
+
+            <!-- Active Dashboard (shown by default) -->
+            <div id="active-dashboard">
+                <!-- KPI Summary Bar -->
+                <div class="kpi-bar">
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6"><i class="fa-solid fa-microchip"></i></div>
+                        <div>
+                            <div class="kpi-value" id="total-nodes">0</div>
+                            <div class="kpi-label">Active Nodes</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background:rgba(34,197,94,0.1);color:#16a34a"><i class="fa-solid fa-user"></i></div>
+                        <div>
+                            <div class="kpi-value" id="kpi-occupied">0</div>
+                            <div class="kpi-label">Rooms Occupied</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background:rgba(100,116,139,0.1);color:#64748b"><i class="fa-solid fa-user-slash"></i></div>
+                        <div>
+                            <div class="kpi-value" id="kpi-empty">0</div>
+                            <div class="kpi-label">Rooms Empty</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background:rgba(37,99,235,0.1);color:#2563EB"><i class="fa-solid fa-fan"></i></div>
+                        <div>
+                            <div class="kpi-value" id="kpi-avgfan">—</div>
+                            <div class="kpi-label">Avg Fan Speed</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background:rgba(239,68,68,0.1);color:#ef4444"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div>
+                            <div class="kpi-value" id="kpi-alerts">0</div>
+                            <div class="kpi-label">Critical Alerts</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background:rgba(239,68,68,0.06);color:#dc2626"><i class="fa-solid fa-fire"></i></div>
+                        <div>
+                            <div class="kpi-value" id="kpi-waste" style="color:#dc2626">0.0</div>
+                            <div class="kpi-label">Energy Waste (kWh)</div>
+                            <div class="kpi-sublabel" id="kpi-waste-rm">RM 0.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zone Overview + Side Panel -->
+                <div class="dash-grid">
+                    <div class="dash-main">
+                        <div class="section-title-row">
+                            <h3>Zone Overview</h3>
+                            <button id="add-zone-btn" class="btn-outline btn-sm">
+                                <i class="fa-solid fa-plus"></i> Add Zone
+                            </button>
+                        </div>
+                        <div id="room-cards-container" class="zone-grid"></div>
+                    </div>
+                    <div class="dash-side">
+                        <div class="card chart-card">
+                            <h3>Sustainable Impact</h3>
+                            <p class="card-sub">Energy (kWh) — Edge AI vs Timers</p>
+                            <canvas id="impactChart" width="380" height="200"></canvas>
+                            <div class="savings-row">
+                                <div class="savings-item">
+                                    <span class="savings-label">Today's Savings</span>
+                                    <span class="savings-val green" id="savings-kwh">6.2 kWh</span>
+                                </div>
+                                <div class="savings-item">
+                                    <span class="savings-label">Cost Saved</span>
+                                    <span class="savings-val green" id="savings-rm">RM 3.41</span>
+                                </div>
+                                <div class="savings-item">
+                                    <span class="savings-label">vs Timer System</span>
+                                    <span class="savings-val" style="color:#2563EB">−41.3%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card stats-card">
+                            <h3>System Analytics</h3>
+                            <div class="stat-row"><span>Energy Saved</span><span class="val green">42.8%</span></div>
+                            <div class="stat-row"><span>HVAC Efficiency</span><span class="val">94%</span></div>
+                            <div class="stat-row"><span>Edge Model</span><span class="val" style="color:#2563EB"><i class="fa-solid fa-bolt"></i> Syncing</span></div>
+                            <div class="stat-row"><span>Nodes Online</span><span class="val" id="stat-nodes-online">—</span></div>
+                            <div class="stat-row"><span>Fallback Mode</span><span class="val" id="stat-fallback">—</span></div>
+                        </div>
+                        <div class="card rec-card">
+                            <div class="rec-header">
+                                <h3><i class="fa-solid fa-robot" style="color:#2563EB"></i> AI Recommendations</h3>
+                                <span class="rec-badge" id="rec-count">0</span>
+                            </div>
+                            <p class="card-sub">Real-time decisions from the Edge AI model.</p>
+                            <div id="ai-recommendations"><p class="empty-rec">Analysing system data…</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edge AI + Network Status (below the dash-grid) -->
+                <div class="hw-status-row">
+                    <!-- Edge AI System Status -->
+                    <div class="card hw-status-card">
+                        <div class="rec-header" style="margin-bottom:0.75rem">
+                            <h3><i class="fa-solid fa-microchip" style="color:#8b5cf6"></i> Edge AI Status <span class="hw-label-sub">(ESP32 TinyML)</span></h3>
+                            <span class="mode-badge autonomous" id="edge-ai-mode-badge"><i class="fa-solid fa-robot"></i> Autonomous</span>
+                        </div>
+                        <div class="stat-row"><span>Decision Source</span><span class="val" id="edge-decision-src" style="color:#16a34a"><i class="fa-solid fa-microchip"></i> Edge AI</span></div>
+                        <div class="stat-row"><span>Model Status</span><span class="val" id="edge-model-status"><i class="fa-solid fa-circle" style="color:#16a34a;font-size:0.5rem"></i> Running</span></div>
+                        <div class="stat-row"><span>Avg Response</span><span class="val" id="edge-latency">37ms</span></div>
+                        <div class="stat-row"><span><i class="fa-solid fa-circle" style="color:#2563eb;font-size:0.5rem"></i> Controllers</span><span class="val" id="edge-ctrl-count">—</span></div>
+                        <div class="stat-row"><span><i class="fa-solid fa-circle" style="color:#8b5cf6;font-size:0.5rem"></i> CSI Nodes</span><span class="val" id="edge-csi-count">—</span></div>
+                        <div class="stat-row"><span><i class="fa-solid fa-circle" style="color:#16a34a;font-size:0.5rem"></i> Sensor Nodes</span><span class="val" id="edge-sensor-count">—</span></div>
+                    </div>
+
+                    <!-- Network & Data Flow Status -->
+                    <div class="card hw-status-card">
+                        <h3 style="margin-bottom:0.75rem"><i class="fa-solid fa-network-wired" style="color:#2563eb"></i> Network & Cloud <span class="hw-label-sub">(MQTT / WiFi)</span></h3>
+                        <div class="stat-row"><span>MQTT Broker</span><span class="val" id="net-mqtt"><i class="fa-solid fa-circle" style="color:#16a34a;font-size:0.5rem"></i> Connected</span></div>
+                        <div class="stat-row"><span>Cloud Sync</span><span class="val" id="net-cloud-sync">2.1s delay</span></div>
+                        <div class="stat-row"><span>WiFi OK</span><span class="val" id="net-wifi-up">—</span></div>
+                        <div class="stat-row"><span>Offline Nodes</span><span class="val" id="net-offline" style="color:#dc2626">—</span></div>
+                        <div class="stat-row"><span>Edge-Only Mode</span><span class="val" id="net-edge-only" style="color:#16a34a">✔ Active</span></div>
+                        <div class="stat-row"><span>Fallback Nodes</span><span class="val" id="net-fallback-nodes" style="color:#1D4ED8">—</span></div>
+                    </div>
+                </div>
+
+                <!-- System Flow Trace -->
+                <div class="card" style="margin-top:1.25rem">
+                    <div class="section-title-row" style="margin-bottom:0.75rem">
+                        <h3><i class="fa-solid fa-diagram-project" style="color:#8b5cf6"></i> System Flow Trace <span class="hw-label-sub">Real-time: Sensor → AI Decision → Actuator</span></h3>
+                    </div>
+                    <div id="flow-trace-body"></div>
+                </div>
+
+                <!-- Behavioural Insights -->
+                <div class="insights-section">
+                    <div class="section-title-row" style="margin-bottom:1rem">
+                        <h3><i class="fa-solid fa-brain" style="color:#8b5cf6"></i> Behavioural Insights</h3>
+                        <span class="card-sub">Pattern analysis from the last 24 hours</span>
+                    </div>
+                    <div class="insights-grid">
+                        <div class="insight-card">
+                            <div class="insight-icon" style="background:rgba(239,68,68,0.1);color:#ef4444"><i class="fa-solid fa-clock"></i></div>
+                            <div>
+                                <div class="insight-title">Most Inefficient Period</div>
+                                <div class="insight-val">08:00 – 09:30</div>
+                                <div class="insight-sub">HVAC on, 0 occupancy detected</div>
+                            </div>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-icon" style="background:rgba(37,99,235,0.1);color:#2563EB"><i class="fa-solid fa-ranking-star"></i></div>
+                            <div>
+                                <div class="insight-title">Highest Waste Zone</div>
+                                <div class="insight-val" id="insight-waste-zone">Staff Office N28</div>
+                                <div class="insight-sub">Running at 22% fan, 0 occupants</div>
+                            </div>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6"><i class="fa-solid fa-chart-bar"></i></div>
+                            <div>
+                                <div class="insight-title">Peak Usage Window</div>
+                                <div class="insight-val">10:00 – 14:00</div>
+                                <div class="insight-sub">Avg 78% occupancy across all zones</div>
+                            </div>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-icon" style="background:rgba(34,197,94,0.1);color:#16a34a"><i class="fa-solid fa-leaf"></i></div>
+                            <div>
+                                <div class="insight-title">AI Energy Actions Today</div>
+                                <div class="insight-val" id="insight-actions">14 adjustments</div>
+                                <div class="insight-sub">Saved est. 6.2 kWh vs timers</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ZONE DETAIL VIEW -->
+    <!-- ============================================================ -->
+    <div id="zone-detail" class="view-section">
+        <div class="inner-page">
+            <div class="page-header">
+                <div>
+                    <button class="btn-back" onclick="backToDashboard()">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                    <h2 id="detail-area-name">Area Name</h2>
+                    <p id="detail-area-loc" style="color:#64748b;font-size:0.9rem"></p>
+                </div>
+                <div class="detail-summary">
+                    <span><i class="fa-solid fa-microchip" style="color:#2563EB"></i> <strong id="detail-node-count">0</strong> Nodes</span>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:1.5rem">
+                <h3 style="margin-bottom:1rem">Node Status</h3>
+                <p class="card-sub" style="margin-bottom:1.5rem">
+                    Each node is an ESP32 sensor deployed in this area. CSI-based occupancy detection drives HVAC adjustments in real time.
+                </p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Node / Role</th>
+                                <th>CSI Occupancy</th>
+                                <th>Fan (Current / Rec.)</th>
+                                <th>VAV (Actual → Rec.)</th>
+                                <th>Cooling</th>
+                                <th>Edge AI / Control</th>
+                                <th>Health / Network</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detail-nodes-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:1.25rem">
+                <h3 style="margin-bottom:0.75rem"><i class="fa-solid fa-circle-info" style="color:#3b82f6"></i> Area Description</h3>
+                <p style="color:#64748b;line-height:1.7;font-size:0.9rem">
+                    This zone is monitored by multiple ESP32 nodes using Wi-Fi CSI (Channel State Information) to detect occupancy without cameras.
+                    When occupancy is detected, the Edge AI model dynamically increases the VAV damper angle and VFD fan speed to maintain air quality.
+                    When the area is empty, both are reduced to conserve energy — directly cutting HVAC waste.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ADD ZONE MODAL -->
+    <!-- ============================================================ -->
+    <div id="zone-modal-overlay" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div>
+                    <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Register New Zone</h3>
+                    <p>Add a physical space and its ESP32 sensor nodes.</p>
+                </div>
+                <button class="modal-close-btn" id="modal-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="setup-form" class="wizard-form">
+                <div class="form-group">
+                    <label for="room-name">Location Name</label>
+                    <input type="text" id="room-name" placeholder="e.g. Conference Room BKT4" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="room-level">Level / Floor</label>
+                        <input type="text" id="room-level" placeholder="e.g. Level 2" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="room-block">Block / Building</label>
+                        <input type="text" id="room-block" placeholder="e.g. Block P16" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="node-count">Number of ESP32 Sensor Nodes</label>
+                    <input type="number" id="node-count" min="1" max="20" value="2" required>
+                </div>
+                <button type="submit" class="btn-primary">Initialize Zone</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ============================================================ -->
+    <!-- ALERTS VIEW -->
+    <!-- ============================================================ -->
+    <div id="alerts" class="view-section">
+        <div class="inner-page">
+            <div class="page-header">
+                <div>
+                    <h2>Monitoring Hub</h2>
+                    <p>AI-powered incident management and decision support.</p>
+                </div>
+            </div>
+
+            <div id="gmail-toast" class="toast hidden">
+                <div class="toast-icon"><i class="fa-brands fa-google"></i></div>
+                <div><h4>System Alert Dispatched</h4><p>A critical failure report has been sent to the assigned Gmail address.</p></div>
+            </div>
+
+            <!-- Incident Summary Bar -->
+            <div class="incident-summary-bar">
+                <div class="inc-stat"><span class="inc-stat-val" id="inc-total">0</span><span class="inc-stat-label">Active Incidents</span></div>
+                <div class="inc-stat inc-crit"><span class="inc-stat-val" id="inc-critical">0</span><span class="inc-stat-label">Critical</span></div>
+                <div class="inc-stat inc-warn"><span class="inc-stat-val" id="inc-warning">0</span><span class="inc-stat-label">Warnings</span></div>
+                <div class="inc-stat inc-ok"><span class="inc-stat-val" id="inc-resolved">2</span><span class="inc-stat-label">Resolved Today</span></div>
+                <div class="inc-stat"><span class="inc-stat-val">1.2s</span><span class="inc-stat-label">Avg AI Response</span></div>
+                <div class="inc-stat">
+                    <span class="inc-stat-val"><span id="system-mode-badge" class="mode-badge autonomous"><i class="fa-solid fa-robot"></i> Autonomous</span></span>
+                    <span class="inc-stat-label">System Mode</span>
+                </div>
+            </div>
+
+            <!-- Smart Filters -->
+            <div class="alert-filters">
+                <span class="filter-label"><i class="fa-solid fa-filter"></i> Filter:</span>
+                <select id="filter-severity" class="filter-select" onchange="applyAlertFilters()">
+                    <option value="">All Severity</option><option>Critical</option><option>Warning</option><option>Info</option>
+                </select>
+                <select id="filter-status" class="filter-select" onchange="applyAlertFilters()">
+                    <option value="">All Status</option><option>Active</option><option>Acknowledged</option><option>Resolved</option>
+                </select>
+                <select id="filter-zone" class="filter-select" onchange="applyAlertFilters()">
+                    <option value="">All Zones</option><option>Conference Room BKT4</option><option>Staff Office N28</option><option>Seminar Hall P8</option>
+                </select>
+                <select id="filter-component" class="filter-select" onchange="applyAlertFilters()">
+                    <option value="">All Components</option><option>Fan (VFD)</option><option>VAV Damper</option><option>CSI Sensor</option><option>Edge Node</option>
+                </select>
+                <button class="filter-clear-btn" onclick="clearAlertFilters()"><i class="fa-solid fa-xmark"></i> Clear</button>
+            </div>
+
+            <div class="alerts-grid">
+                <div class="card">
+                    <div class="card-header-row">
+                        <h3><i class="fa-solid fa-tower-broadcast"></i> Active Incidents</h3>
+                        <button id="simulate-alert-btn" class="btn-danger btn-sm">Simulate Hardware Failure</button>
+                    </div>
+
+                    <!-- Priority group: Critical -->
+                    <div class="priority-group" id="group-critical">
+                        <div class="priority-group-header" onclick="toggleGroup('group-critical')">
+                            <span><i class="fa-solid fa-circle-exclamation" style="color:#dc2626"></i> <strong>Critical</strong> <span class="group-count" id="count-critical">0</span></span>
+                            <i class="fa-solid fa-chevron-down group-chevron" id="chev-group-critical"></i>
+                        </div>
+                        <div class="priority-group-body" id="body-critical"><div class="empty-state"><i class="fa-solid fa-circle-check"></i><p>No critical incidents.</p></div></div>
+                    </div>
+
+                    <!-- Priority group: Warning -->
+                    <div class="priority-group" id="group-warning">
+                        <div class="priority-group-header" onclick="toggleGroup('group-warning')">
+                            <span><i class="fa-solid fa-triangle-exclamation" style="color:#1D4ED8"></i> <strong>Warning</strong> <span class="group-count" id="count-warning">0</span></span>
+                            <i class="fa-solid fa-chevron-down group-chevron" id="chev-group-warning"></i>
+                        </div>
+                        <div class="priority-group-body" id="body-warning"><div class="empty-state"><i class="fa-solid fa-circle-check"></i><p>No warnings.</p></div></div>
+                    </div>
+
+                    <!-- Priority group: Info -->
+                    <div class="priority-group" id="group-info">
+                        <div class="priority-group-header" onclick="toggleGroup('group-info')">
+                            <span><i class="fa-solid fa-circle-info" style="color:#2563eb"></i> <strong>Info</strong> <span class="group-count" id="count-info">0</span></span>
+                            <i class="fa-solid fa-chevron-down group-chevron" id="chev-group-info"></i>
+                        </div>
+                        <div class="priority-group-body" id="body-info"><div class="empty-state"><i class="fa-solid fa-circle-check"></i><p>No info events.</p></div></div>
+                    </div>
+
+                    <!-- Kept for backward compatibility with simulateHardwareFailure -->
+                    <div id="active-incidents" style="display:none"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-row">
+                        <h3>System Status Log</h3>
+                        <span class="log-legend">
+                            <span class="log-tag hvac">HVAC</span>
+                            <span class="log-tag sensor">Sensor</span>
+                            <span class="log-tag ai">AI</span>
+                            <span class="log-tag net">Network</span>
+                        </span>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Time</th><th>Type</th><th>Component</th><th>Event</th><th>Status</th></tr></thead>
+                            <tbody id="status-log-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================ -->
+    <!-- PROFILE VIEW -->
+    <!-- ============================================================ -->
+    <div id="profile" class="view-section">
+        <div class="inner-page">
+            <div class="page-header">
+                <div>
+                    <h2>Organization Profile</h2>
+                    <p>Manage your institution's settings and host assignments.</p>
+                </div>
+            </div>
+
+            <div class="card profile-card">
+                <div class="org-row">
+                    <div class="org-avatar"><i class="fa-solid fa-building-columns"></i></div>
+                    <div>
+                        <h3>Universiti Teknologi Malaysia (UTM)</h3>
+                        <p>Faculty of Computing — Edge AI Department</p>
+                        <span class="pill gold">Enterprise Tier</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-grid">
+                <div class="card">
+                    <h3><i class="fa-solid fa-users-gear"></i> Host Assignment</h3>
+                    <p class="card-sub">Assign admin emails to physical areas for automated alert routing.</p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr><th>Area / Block</th><th>Assigned Admin Email</th><th></th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Block P16</td>
+                                    <td><input type="email" value="technicial_a@utm.my" class="table-input" readonly></td>
+                                    <td><button class="btn-icon"><i class="fa-solid fa-pen"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>Block N28a</td>
+                                    <td><input type="email" value="facilities_n28@utm.my" class="table-input" readonly></td>
+                                    <td><button class="btn-icon"><i class="fa-solid fa-pen"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="btn-outline btn-sm mt"><i class="fa-solid fa-plus"></i> Add Assignment</button>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-bell"></i> Communication Settings</h3>
+                    <p class="card-sub">Manage notification preferences for your organization.</p>
+                    <div class="settings-list">
+                        <div class="setting-row">
+                            <div>
+                                <h4>Critical Hardware Errors</h4>
+                                <p>Email when VAV dampers or VFD fans fail.</p>
+                            </div>
+                            <label class="toggle"><input type="checkbox" checked><span class="track"></span></label>
+                        </div>
+                        <div class="setting-row">
+                            <div>
+                                <h4>Daily Energy Reports</h4>
+                                <p>Summary of energy saved and HVAC efficiency.</p>
+                            </div>
+                            <label class="toggle"><input type="checkbox" checked><span class="track"></span></label>
+                        </div>
+                        <div class="setting-row">
+                            <div>
+                                <h4>Algorithm Updates</h4>
+                                <p>Notify when the ML model receives an OTA update.</p>
+                            </div>
+                            <label class="toggle"><input type="checkbox"><span class="track"></span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
+
