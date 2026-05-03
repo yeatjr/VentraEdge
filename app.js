@@ -712,6 +712,11 @@ function renderIncidents() {
     // Update summary counts
     const active = alertIncidents.filter(i => i.incStatus === 'Active');
     const s = id => document.getElementById(id);
+    if (s('summary-total'))    s('summary-total').textContent    = active.length;
+    if (s('summary-critical')) s('summary-critical').textContent = active.filter(i=>i.severity==='critical').length;
+    if (s('summary-warning'))  s('summary-warning').textContent  = active.filter(i=>i.severity==='warning').length;
+
+    // Legacy support for dashboard KPIs if they exist
     if (s('inc-total'))    s('inc-total').textContent    = active.length;
     if (s('inc-critical')) s('inc-critical').textContent = active.filter(i=>i.severity==='critical').length;
     if (s('inc-warning'))  s('inc-warning').textContent  = active.filter(i=>i.severity==='warning').length;
@@ -724,57 +729,97 @@ function renderIncidents() {
     }
 }
 
+function toggleIncident(id) {
+    const card = document.getElementById(`inc-card-${id}`);
+    if (!card) return;
+    
+    const isExpanded = card.classList.contains('expanded');
+    
+    // Close all other cards first (accordion style)
+    document.querySelectorAll('.inc-card').forEach(c => c.classList.remove('expanded'));
+    
+    // Toggle current
+    if (!isExpanded) {
+        card.classList.add('expanded');
+    }
+}
+
 function buildIncCard(inc) {
     const t = inc.detectedAt;
-    const aiTime = new Date(t.getTime() + 1200).toLocaleTimeString();
+    const aiTime = new Date(t.getTime() + 1200).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    const detTime = t.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    
     return `
     <div class="inc-card sev-${inc.severity} ${inc.incStatus==='Acknowledged'?'is-acked':''}" id="inc-card-${inc.id}">
-        <div class="inc-card-top">
-            <div>
-                <div class="inc-card-title"><i class="fa-solid fa-triangle-exclamation"></i> ${inc.title}</div>
-                <div class="inc-card-zone"><i class="fa-solid fa-location-dot"></i> ${inc.zone} &middot; ${inc.component} &middot; <em>${inc.incStatus}</em></div>
+        <!-- Summary View -->
+        <div class="inc-summary" onclick="toggleIncident(${inc.id})">
+            <div class="inc-summary-main">
+                <div class="inc-summary-info">
+                    <div class="inc-summary-title">${inc.title}</div>
+                    <div class="inc-summary-meta">
+                        <span class="inc-sev-badge ${inc.severity}">${inc.severity}</span>
+                        <span><i class="fa-solid fa-location-dot"></i> ${inc.zone}</span>
+                        <span>&middot; ${inc.incStatus}</span>
+                    </div>
+                </div>
             </div>
-            <span class="inc-sev-badge ${inc.severity}">${inc.severity}</span>
+            <i class="fa-solid fa-chevron-down inc-summary-chevron"></i>
         </div>
 
-        <!-- AI Analysis -->
-        <div class="inc-ai">
-            <div class="inc-ai-row"><span class="inc-ai-label"><i class="fa-solid fa-magnifying-glass"></i> Root Cause</span><span class="inc-ai-val">${inc.rootCause}</span></div>
-            <div class="inc-ai-row"><span class="inc-ai-label"><i class="fa-solid fa-bolt"></i> System Impact</span><span class="inc-ai-val">${inc.impact}</span></div>
-            <div class="inc-ai-row"><span class="inc-ai-label"><i class="fa-solid fa-lightbulb"></i> Suggested Action</span><span class="inc-ai-val">${inc.suggestion}</span></div>
-        </div>
-
-        <!-- System Response -->
-        <div class="inc-sys-response"><i class="fa-solid fa-shield-halved"></i> System Response: <strong>${inc.sysResponse}</strong></div>
-
-        <!-- Timeline -->
-        <div class="inc-timeline">
-            <div class="inc-tl-step">
-                <div class="inc-tl-dot done"><i class="fa-solid fa-check"></i></div>
-                <div class="inc-tl-label">Detected</div>
-                <div class="inc-tl-time">${t.toLocaleTimeString()}</div>
+        <!-- Expanded Details -->
+        <div class="inc-details">
+            <!-- Simplified AI Analysis Blocks -->
+            <div class="inc-ai-blocks">
+                <div class="ai-block">
+                    <span class="ai-block-label">Root Cause</span>
+                    <div class="ai-block-val">${inc.rootCause}</div>
+                </div>
+                <div class="ai-block">
+                    <span class="ai-block-label">System Impact</span>
+                    <div class="ai-block-val">${inc.impact}</div>
+                </div>
+                <div class="ai-block">
+                    <span class="ai-block-label">Suggested Action</span>
+                    <div class="ai-block-val">${inc.suggestion}</div>
+                </div>
             </div>
-            <div class="inc-tl-step">
-                <div class="inc-tl-dot done"><i class="fa-solid fa-robot"></i></div>
-                <div class="inc-tl-label">AI Response</div>
-                <div class="inc-tl-time">${aiTime}</div>
-            </div>
-            <div class="inc-tl-step">
-                <div class="inc-tl-dot ${inc.incStatus==='Resolved'?'done':'active'}"></div>
-                <div class="inc-tl-label">${inc.incStatus==='Resolved'?'Resolved':'Monitoring'}</div>
-                <div class="inc-tl-time">Live</div>
-            </div>
-        </div>
 
-        <!-- Related Events -->
-        ${inc.related ? `<div class="inc-related"><strong><i class="fa-solid fa-link"></i> Related:</strong> ${inc.related}</div>` : ''}
+            <!-- Prominent System Response -->
+            <div class="sys-response-bar">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>AI Response: ${inc.sysResponse}</span>
+            </div>
 
-        <!-- Action Buttons -->
-        <div class="inc-actions">
-            <button class="inc-btn primary" onclick="incAction('fix',${inc.id})"><i class="fa-solid fa-wand-magic-sparkles"></i> Apply AI Fix</button>
-            <button class="inc-btn" onclick="incAction('ack',${inc.id})"><i class="fa-solid fa-check"></i> Acknowledge</button>
-            <button class="inc-btn danger" onclick="incAction('escalate',${inc.id})"><i class="fa-solid fa-arrow-up-right-from-square"></i> Escalate</button>
-            <button class="inc-btn" onclick="incAction('details',${inc.id})"><i class="fa-solid fa-info-circle"></i> Details</button>
+            <!-- Horizontal Visual Timeline -->
+            <div class="visual-timeline">
+                <div class="vt-line-bg"></div>
+                <div class="vt-step done">
+                    <div class="vt-dot"><i class="fa-solid fa-check"></i></div>
+                    <div class="vt-label">Detected</div>
+                    <div class="vt-time">${detTime}</div>
+                </div>
+                <div class="vt-step done">
+                    <div class="vt-dot"><i class="fa-solid fa-robot"></i></div>
+                    <div class="vt-label">AI Response</div>
+                    <div class="vt-time">${aiTime}</div>
+                </div>
+                <div class="vt-step active">
+                    <div class="vt-dot"><i class="fa-solid fa-eye"></i></div>
+                    <div class="vt-label">${inc.incStatus==='Resolved'?'Resolved':'Monitoring'}</div>
+                    <div class="vt-time">Live</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons Hierarchy -->
+            <div class="inc-actions-row">
+                <button class="btn-apply-fix" onclick="incAction('fix',${inc.id})">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Apply AI Fix
+                </button>
+                <div class="btn-secondary-set">
+                    <button class="btn-sec" onclick="incAction('ack',${inc.id})">Acknowledge</button>
+                    <button class="btn-sec" onclick="incAction('esc',${inc.id})">Escalate</button>
+                </div>
+            </div>
         </div>
     </div>`;
 }
@@ -789,7 +834,7 @@ function incAction(action, id) {
     } else if (action === 'ack') {
         inc.incStatus = 'Acknowledged';
         addLogEntry(`Incident Acknowledged: ${inc.title}`, 'Operator', 'OK');
-    } else if (action === 'escalate') {
+    } else if (action === 'esc') {
         inc.incStatus = 'Escalated';
         const toast = document.getElementById('gmail-toast');
         if (toast) { toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 5000); }

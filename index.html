@@ -510,6 +510,23 @@
                 <button class="filter-clear-btn" onclick="clearAlertFilters()"><i class="fa-solid fa-xmark"></i> Clear</button>
             </div>
 
+            <!-- Alert Summary Bar -->
+            <div class="alert-summary-bar">
+                <div class="alert-summary-item">
+                    <span class="label">Total Active Alerts</span>
+                    <span class="val" id="summary-total">0</span>
+                </div>
+                <div class="alert-summary-item critical">
+                    <span class="label">Critical Priority</span>
+                    <span class="val" id="summary-critical">0</span>
+                </div>
+                <div class="alert-summary-item warning">
+                    <span class="label">Warning Priority</span>
+                    <span class="val" id="summary-warning">0</span>
+                </div>
+            </div>
+
+
             <div class="alerts-grid">
                 <div class="card">
                     <div class="card-header-row">
