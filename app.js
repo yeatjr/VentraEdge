@@ -1113,3 +1113,23 @@ function seedDemoAlerts() {
     demoAlerts.forEach(d => addSmartIncident(d));
 }
 
+
+// ─── Sustainable Impact Panel Toggle ─────────────────────────────────────────
+function toggleImpactMore() {
+    const panel = document.getElementById('impact-more');
+    const btn   = document.getElementById('impact-toggle-btn');
+    if (!panel) return;
+
+    const isOpen = panel.style.display !== 'none';
+    panel.style.display = isOpen ? 'none' : 'block';
+
+    if (isOpen) {
+        btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> Show More Info';
+        btn.style.color = 'var(--muted)';
+        btn.style.borderColor = 'var(--border)';
+    } else {
+        btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Hide Details';
+        btn.style.color = 'var(--primary-blue)';
+        btn.style.borderColor = 'var(--primary-blue)';
+    }
+}

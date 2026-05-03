@@ -271,22 +271,32 @@
                                     <span class="savings-val" style="color:#2563EB">−41.3%</span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card stats-card">
-                            <h3>System Analytics</h3>
-                            <div class="stat-row"><span>Energy Saved</span><span class="val green">42.8%</span></div>
-                            <div class="stat-row"><span>HVAC Efficiency</span><span class="val">94%</span></div>
-                            <div class="stat-row"><span>Edge Model</span><span class="val" style="color:#2563EB"><i class="fa-solid fa-bolt"></i> Syncing</span></div>
-                            <div class="stat-row"><span>Nodes Online</span><span class="val" id="stat-nodes-online">—</span></div>
-                            <div class="stat-row"><span>Fallback Mode</span><span class="val" id="stat-fallback">—</span></div>
-                        </div>
-                        <div class="card rec-card">
-                            <div class="rec-header">
-                                <h3><i class="fa-solid fa-robot" style="color:#2563EB"></i> AI Recommendations</h3>
-                                <span class="rec-badge" id="rec-count">0</span>
+
+                            <!-- Expandable: System Analytics + AI Recommendations -->
+                            <div id="impact-more" style="display:none; margin-top:1rem; border-top:1px solid var(--border); padding-top:1rem;">
+                                <div style="font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.6rem;">System Analytics</div>
+                                <div class="stat-row"><span>Energy Saved</span><span class="val green">42.8%</span></div>
+                                <div class="stat-row"><span>HVAC Efficiency</span><span class="val">94%</span></div>
+                                <div class="stat-row"><span>Edge Model</span><span class="val" style="color:#2563EB"><i class="fa-solid fa-bolt"></i> Syncing</span></div>
+                                <div class="stat-row"><span>Nodes Online</span><span class="val" id="stat-nodes-online">—</span></div>
+                                <div class="stat-row" style="margin-bottom:1rem;"><span>Fallback Mode</span><span class="val" id="stat-fallback">—</span></div>
+
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;">
+                                    <span style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">AI Recommendations</span>
+                                    <span class="rec-badge" id="rec-count">0</span>
+                                </div>
+                                <p class="card-sub" style="font-size:0.72rem;margin-bottom:0.6rem;">Real-time decisions from the Edge AI model.</p>
+                                <div id="ai-recommendations"><p class="empty-rec">Analysing system data…</p></div>
                             </div>
-                            <p class="card-sub">Real-time decisions from the Edge AI model.</p>
-                            <div id="ai-recommendations"><p class="empty-rec">Analysing system data…</p></div>
+
+                            <!-- Toggle Button -->
+                            <button id="impact-toggle-btn" onclick="toggleImpactMore()" style="
+                                width:100%; margin-top:1rem; padding:0.6rem; border-radius:8px;
+                                border:1px solid var(--border); background:var(--bg); color:var(--muted);
+                                font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.2s;
+                            ">
+                                <i class="fa-solid fa-chevron-down" id="impact-toggle-icon"></i> Show More Info
+                            </button>
                         </div>
                     </div>
                 </div>
