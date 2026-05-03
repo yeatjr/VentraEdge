@@ -841,9 +841,14 @@ function resolveIncident(inc, finalStatus, note, actionBy) {
 }
 
 // ─── Main Action Dispatcher ───────────────────────────────────────────────────
-function incAction(action, id) {
-    const inc = alertIncidents.find(i => i.id === id);
-    if (!inc) return;
+function incAction(event, action, id) {
+    if (event) event.stopPropagation();
+    
+    const inc = alertIncidents.find(i => i.id == id);
+    if (!inc) {
+        console.error("Incident not found for ID:", id);
+        return;
+    }
 
     if (action === 'ack') {
         resolveIncident(inc, 'Acknowledged by Admin', 'Admin reviewed and acknowledged. No further action required at this time.', 'Admin');
@@ -970,8 +975,8 @@ function buildIncCard(inc) {
             <!-- Action Buttons Hierarchy -->
             <div class="inc-actions-row">
                 <div class="btn-secondary-set" style="width:100%; display:flex; gap:0.5rem;">
-                    <button class="btn-sec" style="flex:1" onclick="incAction('ack',${inc.id})">Acknowledge</button>
-                    <button class="btn-primary" style="flex:1" onclick="incAction('esc',${inc.id})">Notify Admin</button>
+                    <button class="btn-sec" style="flex:1" onclick="incAction(event, 'ack', '${inc.id}')">Acknowledge</button>
+                    <button class="btn-primary" style="flex:1" onclick="incAction(event, 'esc', '${inc.id}')">Notify Admin</button>
                 </div>
             </div>
         </div>
