@@ -963,8 +963,20 @@ function buildIncCard(inc) {
                 </div>
                 <div class="vt-step active">
                     <div class="vt-dot"><i class="fa-solid fa-eye"></i></div>
-                    <div class="vt-label">${inc.incStatus==='Resolved'?'Resolved':'Monitoring'}</div>
-                    <div class="vt-time">Live</div>
+                    <div class="vt-label">${(() => {
+                        if (inc.incStatus === 'Resolved') return 'Resolved';
+                        if (inc.component === 'Edge Node' && inc.title.toLowerCase().includes('ota')) return 'Pending Deployment';
+                        if (inc.controlMode === 'fallback' || (inc.sysResponse && inc.sysResponse.toLowerCase().includes('fallback'))) return 'Fallback Active';
+                        if (inc.severity === 'critical') return 'Fault — Under Watch';
+                        return 'Observing Conditions';
+                    })()}</div>
+                    <div class="vt-time">${(() => {
+                        if (inc.incStatus === 'Resolved') return 'Done';
+                        if (inc.component === 'Edge Node' && inc.title.toLowerCase().includes('ota')) return 'Awaiting idle window';
+                        if (inc.sysResponse && inc.sysResponse.toLowerCase().includes('fallback')) return 'Fallback running';
+                        if (inc.severity === 'critical') return 'Monitoring conditions';
+                        return 'System observing';
+                    })()}</div>
                 </div>
             </div>
 
