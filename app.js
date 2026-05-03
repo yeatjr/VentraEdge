@@ -568,20 +568,45 @@ function renderFlowTrace() {
     if (!body) return;
     const rows = [];
     areas.forEach(area => {
+        let reprNode = null;
+        let priority = -1;
+        
+        // Pick one representative node per zone to reduce clutter
         area.nodes.forEach(node => {
-            const badge = node.status==='critical' ? 'fault' : (node.controlMode==='fallback' ? 'fb' : 'ok');
-            rows.push(`<div class="flow-trace-row">
-                <span class="flow-zone">${area.name} · Node ${node.nodeNum}</span>
+            let p = 0; // normal
+            if (node.fanSpeed < 40 && !node.occupancy) p = 1; // energy-saving
+            if (node.controlMode === 'fallback') p = 2; // fallback
+            if (node.status === 'critical') p = 3; // fault
+            if (p > priority) {
+                priority = p;
+                reprNode = node;
+            }
+        });
+
+        if (reprNode) {
+            let badge = 'ok';
+            let label = '✔ Comfort Maintained';
+            
+            if (priority === 3) { badge = 'fault'; label = '⚠ Fault Detected'; }
+            else if (priority === 2) { badge = 'fb'; label = '⚡ Fallback Active'; }
+            else if (priority === 1) { badge = 'saving'; label = '🌱 Energy Saved'; }
+
+            // Zone header
+            rows.push(`<div class="flow-zone-header" style="font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-top:0.75rem;margin-bottom:0.4rem;letter-spacing:0.5px;">${area.name}</div>`);
+            
+            const highlightClass = (priority >= 2) ? 'abnormal' : '';
+            rows.push(`<div class="flow-trace-row ${highlightClass}">
+                <span class="flow-zone">Node ${reprNode.nodeNum}</span>
                 <div class="flow-chain">
-                    <span class="flow-step sensor"><i class="fa-solid fa-wifi"></i> CSI ${node.csiConfidence!=null?node.csiConfidence+'%':'—'} <em>${node.motionState||'—'}</em></span>
+                    <span class="flow-step sensor"><i class="fa-solid fa-wifi"></i> CSI ${reprNode.csiConfidence!=null?reprNode.csiConfidence+'%':'—'} <em>${reprNode.motionState||'—'}</em></span>
                     <span class="flow-arrow">→</span>
-                    <span class="flow-step ai"><i class="fa-solid fa-microchip"></i> ${node.decisionSource||'Edge AI'} ${node.responseLatency?'<em>'+node.responseLatency+'ms</em>':''}</span>
+                    <span class="flow-step ai"><i class="fa-solid fa-microchip"></i> ${reprNode.decisionSource||'Edge AI'} ${reprNode.responseLatency?'<em>'+reprNode.responseLatency+'ms</em>':''}</span>
                     <span class="flow-arrow">→</span>
-                    <span class="flow-step act"><i class="fa-solid fa-wind"></i> Fan ${node.fanSpeed}% · VAV ${Math.round(node.damperAngle/90*100)}%</span>
-                    <span class="flow-badge ${badge}">${badge==='fault'?'⚠ Fault':badge==='fb'?'⚡ Fallback':'✔ OK'}</span>
+                    <span class="flow-step act"><i class="fa-solid fa-wind"></i> Fan ${reprNode.fanSpeed}% · VAV ${Math.round(reprNode.damperAngle/90*100)}%</span>
+                    <span class="flow-badge ${badge}">${label}</span>
                 </div>
             </div>`);
-        });
+        }
     });
     body.innerHTML = rows.length ? rows.join('') : '<p style="color:#94a3b8;font-size:0.8rem">No trace data yet.</p>';
 }

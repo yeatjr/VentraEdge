@@ -749,5 +749,7 @@ tr.log-detail-row td { background:#f8fafc; font-size:0.78rem; color:var(--muted)
 .flow-badge.ok    { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
 .flow-badge.fault { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
 .flow-badge.fb    { background:#eff6ff; color:#1D4ED8; border:1px solid #bfdbfe; }
+.flow-badge.saving { background:#dcfce7; color:#166534; border:1px solid #bbf7d0; }
+.flow-trace-row.abnormal { background:rgba(239,68,68,0.04); padding-left:0.5rem; padding-right:0.5rem; border-radius:8px; border-left:3px solid var(--red); }
 
 
