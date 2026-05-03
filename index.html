@@ -526,8 +526,20 @@
                 </div>
             </div>
 
+                <div class="alerts-tab-bar">
+                    <button class="alerts-tab active" id="tab-active" onclick="switchAlertsTab('active')">
+                        <i class="fa-solid fa-tower-broadcast"></i> Active Incidents
+                        <span class="tab-badge" id="tab-badge-active">0</span>
+                    </button>
+                    <button class="alerts-tab" id="tab-history" onclick="switchAlertsTab('history')">
+                        <i class="fa-solid fa-clock-rotate-left"></i> History
+                        <span class="tab-badge resolved" id="tab-badge-history">0</span>
+                    </button>
+                </div>
 
-            <div class="alerts-grid">
+                <!-- ACTIVE INCIDENTS PANEL -->
+                <div id="alerts-panel-active">
+                <div class="alerts-grid">
                 <div class="card">
                     <div class="card-header-row">
                         <h3><i class="fa-solid fa-tower-broadcast"></i> Active Incidents</h3>
@@ -582,10 +594,46 @@
                         </table>
                     </div>
                 </div>
+                </div>
+                </div>
+
+                <!-- HISTORY PANEL -->
+                <div id="alerts-panel-history" style="display:none">
+                <div class="alerts-grid">
+                <div class="card">
+                    <div class="card-header-row">
+                        <h3><i class="fa-solid fa-clock-rotate-left"></i> Resolved Incidents</h3>
+                        <button class="btn-outline btn-sm" onclick="clearHistory()"><i class="fa-solid fa-trash"></i> Clear History</button>
+                    </div>
+                    <div id="history-list"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No resolved incidents yet.</p></div></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-row">
+                        <h3><i class="fa-solid fa-ticket"></i> Maintenance Tickets</h3>
+                    </div>
+                    <div id="tickets-list"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No maintenance tickets created.</p></div></div>
+                </div>
+                </div>
+                </div>
+
+    <!-- ============================================================ -->
+    <!-- ESCALATION MODAL -->
+    <!-- ============================================================ -->
+    <div id="escalation-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h3>Escalate Incident</h3>
+            <p>Notify facilities team via email for immediate manual intervention.</p>
+            <div class="form-group" style="margin-top:1rem">
+                <label>Escalation Note</label>
+                <textarea id="escalation-note" rows="3" placeholder="Additional context for the maintenance team..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-outline" onclick="closeEscalationModal()">Cancel</button>
+                <button class="btn-primary" onclick="confirmEscalation()">Send Notification</button>
             </div>
         </div>
     </div>
-
 
     <!-- ============================================================ -->
     <!-- PROFILE VIEW -->

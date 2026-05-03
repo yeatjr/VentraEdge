@@ -715,6 +715,8 @@ function renderIncidents() {
     if (s('summary-total'))    s('summary-total').textContent    = active.length;
     if (s('summary-critical')) s('summary-critical').textContent = active.filter(i=>i.severity==='critical').length;
     if (s('summary-warning'))  s('summary-warning').textContent  = active.filter(i=>i.severity==='warning').length;
+    if (s('tab-badge-active')) s('tab-badge-active').textContent = active.length;
+    if (s('tab-badge-history')) s('tab-badge-history').textContent = resolvedHistory.length;
 
     // Legacy support for dashboard KPIs if they exist
     if (s('inc-total'))    s('inc-total').textContent    = active.length;
@@ -726,6 +728,162 @@ function renderIncidents() {
     if (badge) {
         const hasCritical = active.filter(i=>i.severity==='critical').length > 0;
         badge.style.display = (hasCritical && isLoggedIn()) ? 'inline-flex' : 'none';
+    }
+}
+
+// ─── Resolved History State ───────────────────────────────────────────────────
+const resolvedHistory = [];
+const maintenanceTickets = [];
+let _escalatingIncId = null;
+
+// ─── Tab Switcher ─────────────────────────────────────────────────────────────
+function switchAlertsTab(tab) {
+    document.getElementById('alerts-panel-active').style.display  = tab === 'active'  ? '' : 'none';
+    document.getElementById('alerts-panel-history').style.display = tab === 'history' ? '' : 'none';
+    document.getElementById('tab-active').classList.toggle('active',  tab === 'active');
+    document.getElementById('tab-history').classList.toggle('active', tab === 'history');
+    if (tab === 'history') renderHistory();
+}
+
+// ─── History Rendering ────────────────────────────────────────────────────────
+function renderHistory() {
+    const list = document.getElementById('history-list');
+    const ticketEl = document.getElementById('tickets-list');
+    if (!list) return;
+
+    if (resolvedHistory.length === 0) {
+        list.innerHTML = '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No resolved incidents yet.</p></div>';
+    } else {
+        list.innerHTML = resolvedHistory.slice().reverse().map(h => {
+            const statusClass = h.finalStatus === 'Auto-Resolved' ? 'auto-resolved' :
+                                h.finalStatus === 'Acknowledged'  ? 'acknowledged'  : 'escalated';
+            const byIcon = h.actionBy === 'AI' ? '🤖' : '👤';
+            return `<div class="history-card">
+                <div class="history-card-top">
+                    <div>
+                        <div class="history-card-title">${h.title}</div>
+                        <div class="history-card-meta">
+                            <span><i class="fa-solid fa-location-dot"></i> ${h.zone}</span>
+                            <span>&middot; ${h.component}</span>
+                            <span>&middot; ${h.timestamp}</span>
+                            <span>&middot; ${byIcon} ${h.actionBy}</span>
+                        </div>
+                    </div>
+                    <span class="status-badge ${statusClass}">${h.finalStatus}</span>
+                </div>
+                <div class="history-note">${h.note}</div>
+            </div>`;
+        }).join('');
+    }
+
+    if (ticketEl) {
+        if (maintenanceTickets.length === 0) {
+            ticketEl.innerHTML = '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No maintenance tickets created.</p></div>';
+        } else {
+            ticketEl.innerHTML = maintenanceTickets.slice().reverse().map(t => `
+                <div class="ticket-card">
+                    <div class="ticket-card-title">🔧 ${t.title}</div>
+                    <div class="ticket-card-meta">
+                        <span><i class="fa-solid fa-location-dot"></i> ${t.zone}</span>
+                        <span>&middot; ${t.component}</span>
+                        <span>&middot; <strong>${t.priority}</strong> priority</span>
+                        <span>&middot; ${t.created}</span>
+                    </div>
+                    ${t.note ? `<div class="ticket-card-note"><strong>Note:</strong> ${t.note}</div>` : ''}
+                </div>`).join('');
+        }
+    }
+}
+
+function clearHistory() {
+    resolvedHistory.length = 0;
+    maintenanceTickets.length = 0;
+    renderHistory();
+    renderAlerts();
+}
+
+// ─── Resolve an incident (remove from active, push to history) ────────────────
+function resolveIncident(inc, finalStatus, note, actionBy) {
+    inc.incStatus = finalStatus;
+    resolvedHistory.push({
+        title: inc.title, zone: inc.zone, component: inc.component,
+        severity: inc.severity, finalStatus, note, actionBy,
+        timestamp: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+    });
+    // Remove from active list
+    const idx = alertIncidents.indexOf(inc);
+    if (idx > -1) alertIncidents.splice(idx, 1);
+}
+
+// ─── Escalation Modal ─────────────────────────────────────────────────────────
+function openEscalationModal(id) {
+    _escalatingIncId = id;
+    const inc = alertIncidents.find(i => i.id === id);
+    if (!inc) return;
+
+    // Populate read-only modal info
+    const modal = document.getElementById('escalation-modal');
+    modal.querySelector('h3').textContent = 'Escalate: ' + inc.title;
+    modal.querySelector('p').textContent = `Zone: ${inc.zone} · Component: ${inc.component} · Severity: ${inc.severity}`;
+    const noteEl = document.getElementById('escalation-note');
+    if (noteEl) noteEl.value = inc.suggestion || '';
+
+    modal.classList.remove('hidden');
+}
+
+function closeEscalationModal() {
+    document.getElementById('escalation-modal').classList.add('hidden');
+    _escalatingIncId = null;
+}
+
+function confirmEscalation() {
+    const inc = alertIncidents.find(i => i.id === _escalatingIncId);
+    if (!inc) { closeEscalationModal(); return; }
+
+    const note = (document.getElementById('escalation-note') || {}).value || inc.suggestion;
+
+    maintenanceTickets.push({
+        title: inc.title, zone: inc.zone, component: inc.component,
+        severity: inc.severity, priority: inc.severity === 'critical' ? 'High' : 'Medium',
+        note, created: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+    });
+
+    resolveIncident(inc, 'Escalated', `Maintenance ticket created. Admin note: ${note}`, 'Admin');
+    addLogEntry(`Escalated to maintenance: ${inc.title}`, inc.component, 'OK');
+
+    const toast = document.getElementById('gmail-toast');
+    if (toast) { toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 5000); }
+
+    closeEscalationModal();
+    renderAlerts();
+    switchAlertsTab('history');
+}
+
+// ─── Main Action Dispatcher ───────────────────────────────────────────────────
+function incAction(action, id) {
+    const inc = alertIncidents.find(i => i.id === id);
+    if (!inc) return;
+
+    if (action === 'fix') {
+        const aiActions = [
+            'Fallback airflow control activated. VAV operating in safe default mode.',
+            'Faulty actuator bypassed. Zone fans operating at 60% default.',
+            'Fan speed reduced to 40%. Zone comfort maintained via CSI occupancy detection.',
+            'Edge node switched to safe fallback mode. Monitoring via cloud backup.',
+            'Predictive bypass engaged. Adjacent zone coverage extended.'
+        ];
+        const taken = aiActions[Math.floor(Math.random() * aiActions.length)];
+        resolveIncident(inc, 'Auto-Resolved', `AI Fix: ${taken}`, 'AI');
+        addLogEntry(`AI Auto-Resolved: ${inc.title}`, inc.component, 'OK');
+        renderAlerts();
+
+    } else if (action === 'ack') {
+        resolveIncident(inc, 'Acknowledged', 'Admin reviewed and acknowledged. No further action required at this time.', 'Admin');
+        addLogEntry(`Acknowledged: ${inc.title}`, 'Operator', 'OK');
+        renderAlerts();
+
+    } else if (action === 'esc') {
+        openEscalationModal(id);
     }
 }
 
@@ -824,27 +982,7 @@ function buildIncCard(inc) {
     </div>`;
 }
 
-function incAction(action, id) {
-    const inc = alertIncidents.find(i => i.id === id);
-    if (!inc) return;
-    if (action === 'fix') {
-        inc.sysResponse = 'AI Fix Applied — Fallback airflow control activated';
-        inc.incStatus = 'Acknowledged';
-        addLogEntry('AI Fix Applied — Fallback active', inc.component, 'OK');
-    } else if (action === 'ack') {
-        inc.incStatus = 'Acknowledged';
-        addLogEntry(`Incident Acknowledged: ${inc.title}`, 'Operator', 'OK');
-    } else if (action === 'esc') {
-        inc.incStatus = 'Reported';
-        const toast = document.getElementById('gmail-toast');
-        if (toast) { toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 5000); }
-        addLogEntry(`Reported to Admin: ${inc.title}`, 'Operator', 'OK');
-    } else if (action === 'details') {
-        alert(`Incident #${inc.id}\n\nZone: ${inc.zone}\nComponent: ${inc.component}\nDetected: ${inc.detectedAt.toLocaleTimeString()}\nStatus: ${inc.incStatus}\n\nRoot Cause: ${inc.rootCause}`);
-        return;
-    }
-    renderIncidents();
-}
+
 
 // ─── Filters ──────────────────────────────────────────────────────────────────
 function applyAlertFilters() { renderIncidents(); }

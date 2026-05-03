@@ -595,6 +595,69 @@ button { font-family:inherit; cursor:pointer; transition:var(--transition); }
 .priority-group-body { padding:0.5rem; }
 .priority-group-body.collapsed { display:none; }
 
+/* ── Alerts Tab Bar ──────────────────────────────────────────── */
+.alerts-tab-bar { display:flex; gap:0.5rem; margin-bottom:1.25rem; border-bottom:2px solid var(--border); padding-bottom:0; }
+.alerts-tab {
+    padding:0.65rem 1.25rem; border-radius:8px 8px 0 0; font-size:0.88rem; font-weight:600;
+    background:transparent; border:none; cursor:pointer; color:var(--muted); display:flex; align-items:center; gap:0.5rem;
+    border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.2s;
+}
+.alerts-tab:hover { color:var(--text); background:#f8fafc; }
+.alerts-tab.active { color:var(--primary-blue); border-bottom-color:var(--primary-blue); }
+.tab-badge { font-size:0.65rem; font-weight:800; padding:0.1rem 0.5rem; border-radius:20px; background:#e2e8f0; color:#475569; }
+.tab-badge.resolved { background:#dcfce7; color:#16a34a; }
+
+/* ── History Card ────────────────────────────────────────────── */
+.history-card {
+    border:1px solid var(--border); border-radius:12px; padding:1rem 1.25rem;
+    margin-bottom:0.75rem; background:var(--white);
+}
+.history-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:0.75rem; margin-bottom:0.5rem; }
+.history-card-title { font-size:0.88rem; font-weight:700; color:var(--text); }
+.history-card-meta { font-size:0.72rem; color:var(--muted); display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:0.15rem; }
+.history-note { font-size:0.78rem; color:var(--muted); margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--border); }
+.status-badge { font-size:0.65rem; font-weight:800; text-transform:uppercase; padding:0.2rem 0.6rem; border-radius:20px; white-space:nowrap; }
+.status-badge.auto-resolved { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
+.status-badge.acknowledged  { background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; }
+.status-badge.escalated     { background:#fef9c3; color:#a16207; border:1px solid #fde68a; }
+
+/* ── Maintenance Ticket ──────────────────────────────────────── */
+.ticket-card {
+    border:1px solid #fde68a; border-radius:12px; padding:1rem 1.25rem;
+    margin-bottom:0.75rem; background:#fffbeb; border-left:4px solid #f59e0b;
+}
+.ticket-card-title { font-size:0.88rem; font-weight:700; color:#92400e; }
+.ticket-card-meta { font-size:0.72rem; color:#a16207; margin-top:0.25rem; display:flex; gap:0.75rem; flex-wrap:wrap; }
+.ticket-card-note { font-size:0.78rem; color:#78350f; margin-top:0.5rem; }
+
+/* ── Escalation Modal ────────────────────────────────────────── */
+.modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000;
+    display:flex; align-items:center; justify-content:center; padding:1rem;
+}
+.modal-overlay.hidden { display:none; }
+.modal-box {
+    background:var(--white); border-radius:16px; padding:2rem; width:100%; max-width:520px;
+    box-shadow:0 24px 64px rgba(0,0,0,0.2);
+}
+.modal-box h3 { font-size:1.2rem; margin-bottom:0.25rem; }
+.modal-box > p { font-size:0.85rem; color:var(--muted); margin-bottom:1rem; }
+.modal-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1.25rem; }
+.modal-info-item { background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:0.65rem; }
+.modal-info-label { font-size:0.62rem; font-weight:700; color:var(--primary-blue); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:0.2rem; }
+.modal-info-val { font-size:0.82rem; font-weight:600; color:var(--text); }
+.modal-box label { font-size:0.8rem; font-weight:600; color:var(--text); display:block; margin-bottom:0.4rem; }
+.modal-box input, .modal-box select, .modal-box textarea {
+    width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border); border-radius:8px;
+    font-size:0.85rem; font-family:inherit; background:var(--white); color:var(--text);
+    margin-bottom:0.85rem; resize:vertical;
+}
+.modal-box input:focus, .modal-box select:focus, .modal-box textarea:focus {
+    outline:none; border-color:var(--primary-blue); box-shadow:0 0 0 3px rgba(37,99,235,0.1);
+}
+.modal-actions { display:flex; gap:0.75rem; margin-top:0.5rem; }
+.modal-actions button { flex:1; }
+
 /* ── Alert Summary Bar ───────────────────────────────────────── */
 .alert-summary-bar {
     display: flex; gap: 1rem; margin-bottom: 1.5rem;
