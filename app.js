@@ -733,8 +733,19 @@ function renderIncidents() {
 
 // ─── Resolved History State ───────────────────────────────────────────────────
 const resolvedHistory = [];
-const maintenanceTickets = [];
-let _escalatingIncId = null;
+const maintenanceTickets = [
+    {
+        title: 'Ticket #MT-1042 — VAV Damper Actuator Unresponsive',
+        zone: 'Seminar Hall P8',
+        component: 'VAV Damper / Node 4',
+        severity: 'critical',
+        priority: 'Critical',
+        note: 'Inspect actuator wiring and mechanical damper movement.',
+        created: 'Today, 06:42 PM',
+        status: 'Assigned',
+        assignee: 'Maintenance Team A'
+    }
+];
 
 // ─── Tab Switcher ─────────────────────────────────────────────────────────────
 function switchAlertsTab(tab) {
@@ -782,14 +793,28 @@ function renderHistory() {
         } else {
             ticketEl.innerHTML = maintenanceTickets.slice().reverse().map(t => `
                 <div class="ticket-card">
-                    <div class="ticket-card-title">🔧 ${t.title}</div>
-                    <div class="ticket-card-meta">
-                        <span><i class="fa-solid fa-location-dot"></i> ${t.zone}</span>
-                        <span>&middot; ${t.component}</span>
-                        <span>&middot; <strong>${t.priority}</strong> priority</span>
-                        <span>&middot; ${t.created}</span>
+                    <div class="ticket-image-wrap">
+                        <img src="vav_damper_placeholder_1777805222058.png" alt="Hardware Image" onerror="this.src='https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=400&q=80'">
                     </div>
-                    ${t.note ? `<div class="ticket-card-note"><strong>Note:</strong> ${t.note}</div>` : ''}
+                    <div class="ticket-content">
+                        <div class="ticket-card-title">
+                            <span>🔧 ${t.title}</span>
+                            <span class="status-badge" style="background:#fef3c7;color:#d97706">${t.status || 'Open'}</span>
+                        </div>
+                        <div class="ticket-card-meta">
+                            <span><i class="fa-solid fa-location-dot"></i> ${t.zone}</span>
+                            <span>&middot; ${t.component}</span>
+                            <span>&middot; <strong>${t.priority}</strong> priority</span>
+                            ${t.assignee ? `<span>&middot; Assigned to: ${t.assignee}</span>` : ''}
+                            <span>&middot; Created: ${t.created}</span>
+                        </div>
+                        ${t.note ? `<div class="ticket-card-note"><strong>Suggested action:</strong> ${t.note}</div>` : ''}
+                        <div class="ticket-actions">
+                            <button class="ticket-btn-primary">Resolve Ticket</button>
+                            <button class="ticket-btn-outline">Mark In Progress</button>
+                            <button class="ticket-btn-outline">View Details</button>
+                        </div>
+                    </div>
                 </div>`).join('');
         }
     }
@@ -815,75 +840,37 @@ function resolveIncident(inc, finalStatus, note, actionBy) {
     if (idx > -1) alertIncidents.splice(idx, 1);
 }
 
-// ─── Escalation Modal ─────────────────────────────────────────────────────────
-function openEscalationModal(id) {
-    _escalatingIncId = id;
-    const inc = alertIncidents.find(i => i.id === id);
-    if (!inc) return;
-
-    // Populate read-only modal info
-    const modal = document.getElementById('escalation-modal');
-    modal.querySelector('h3').textContent = 'Escalate: ' + inc.title;
-    modal.querySelector('p').textContent = `Zone: ${inc.zone} · Component: ${inc.component} · Severity: ${inc.severity}`;
-    const noteEl = document.getElementById('escalation-note');
-    if (noteEl) noteEl.value = inc.suggestion || '';
-
-    modal.classList.remove('hidden');
-}
-
-function closeEscalationModal() {
-    document.getElementById('escalation-modal').classList.add('hidden');
-    _escalatingIncId = null;
-}
-
-function confirmEscalation() {
-    const inc = alertIncidents.find(i => i.id === _escalatingIncId);
-    if (!inc) { closeEscalationModal(); return; }
-
-    const note = (document.getElementById('escalation-note') || {}).value || inc.suggestion;
-
-    maintenanceTickets.push({
-        title: inc.title, zone: inc.zone, component: inc.component,
-        severity: inc.severity, priority: inc.severity === 'critical' ? 'High' : 'Medium',
-        note, created: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
-    });
-
-    resolveIncident(inc, 'Escalated', `Maintenance ticket created. Admin note: ${note}`, 'Admin');
-    addLogEntry(`Escalated to maintenance: ${inc.title}`, inc.component, 'OK');
-
-    const toast = document.getElementById('gmail-toast');
-    if (toast) { toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 5000); }
-
-    closeEscalationModal();
-    renderAlerts();
-    switchAlertsTab('history');
-}
-
 // ─── Main Action Dispatcher ───────────────────────────────────────────────────
 function incAction(action, id) {
     const inc = alertIncidents.find(i => i.id === id);
     if (!inc) return;
 
-    if (action === 'fix') {
-        const aiActions = [
-            'Fallback airflow control activated. VAV operating in safe default mode.',
-            'Faulty actuator bypassed. Zone fans operating at 60% default.',
-            'Fan speed reduced to 40%. Zone comfort maintained via CSI occupancy detection.',
-            'Edge node switched to safe fallback mode. Monitoring via cloud backup.',
-            'Predictive bypass engaged. Adjacent zone coverage extended.'
-        ];
-        const taken = aiActions[Math.floor(Math.random() * aiActions.length)];
-        resolveIncident(inc, 'Auto-Resolved', `AI Fix: ${taken}`, 'AI');
-        addLogEntry(`AI Auto-Resolved: ${inc.title}`, inc.component, 'OK');
-        renderAlerts();
-
-    } else if (action === 'ack') {
-        resolveIncident(inc, 'Acknowledged', 'Admin reviewed and acknowledged. No further action required at this time.', 'Admin');
+    if (action === 'ack') {
+        resolveIncident(inc, 'Acknowledged by Admin', 'Admin reviewed and acknowledged. No further action required at this time.', 'Admin');
         addLogEntry(`Acknowledged: ${inc.title}`, 'Operator', 'OK');
         renderAlerts();
 
     } else if (action === 'esc') {
-        openEscalationModal(id);
+        maintenanceTickets.push({
+            title: `Ticket #MT-${Math.floor(1000 + Math.random() * 9000)} — ${inc.title}`,
+            zone: inc.zone,
+            component: inc.component,
+            severity: inc.severity,
+            priority: inc.severity === 'critical' ? 'Critical' : 'High',
+            note: inc.suggestion || 'Inspect hardware and resolve issue.',
+            created: 'Today, ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+            status: 'New',
+            assignee: 'Maintenance Team'
+        });
+
+        resolveIncident(inc, 'Admin Notified', `Maintenance ticket created. Notification sent to facilities team.`, 'Admin');
+        addLogEntry(`Escalated to maintenance: ${inc.title}`, inc.component, 'OK');
+
+        const toast = document.getElementById('gmail-toast');
+        if (toast) { toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 5000); }
+
+        renderAlerts();
+        switchAlertsTab('history');
     }
 }
 
@@ -982,12 +969,9 @@ function buildIncCard(inc) {
 
             <!-- Action Buttons Hierarchy -->
             <div class="inc-actions-row">
-                <button class="btn-apply-fix" onclick="incAction('fix',${inc.id})">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> Apply AI Fix
-                </button>
-                <div class="btn-secondary-set">
-                    <button class="btn-sec" onclick="incAction('ack',${inc.id})">Acknowledge</button>
-                    <button class="btn-sec" onclick="incAction('esc',${inc.id})">Notify Admin</button>
+                <div class="btn-secondary-set" style="width:100%; display:flex; gap:0.5rem;">
+                    <button class="btn-sec" style="flex:1" onclick="incAction('ack',${inc.id})">Acknowledge</button>
+                    <button class="btn-primary" style="flex:1" onclick="incAction('esc',${inc.id})">Notify Admin</button>
                 </div>
             </div>
         </div>
